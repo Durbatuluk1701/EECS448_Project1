@@ -1,9 +1,11 @@
+import Space from "./space.js"
+
 // Example player board representation
 // Isaac: I marked the indices with x and y to make it clearer
 // X's go from left to right
 // Y's go from top to bottom 
 
-newBoard = () => {
+const newBoard = () => {
     let board = []
     for(let y=1; y<10; y++){
         let row = []
@@ -24,11 +26,13 @@ const player2Board = newBoard();
 // onto the HTML Table
 const mapToGrid = (board, boardId) => {
     let gameGrid = document.querySelector(boardId);
-    board.forEach((row, index1) => {
-        row.forEach((cell, index2) => {
-            gameGrid.children[0].children[index1].children[index2].innerHTML = cell;
-        })
-    })
+
+    for(let i=0; i<9; i++){
+        for(let j=0; j<9; j++){
+            console.log(board[i][j].state)
+            gameGrid.children[0].children[i].children[j].innerHTML = board[i][j].state;
+        }
+    }
 }
 
 const toggleColor = (cell, color) => {
@@ -137,5 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
     }
+
+    document.getElementById("start").addEventListener("click", startGame)
 
 })
