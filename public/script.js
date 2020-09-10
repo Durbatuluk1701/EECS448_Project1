@@ -7,10 +7,10 @@ import Space from "./space.js"
 
 const newBoard = () => {
     let board = []
-    for(let x=0; x<9; y++){
+    for(let y=0; y<9; y++){
         let row = []
-        for(let y=0; y<9; x++){
-            let space = new Space(x, y);
+        for(let x=0; x<9; x++){
+            let space = new Space(y, x);
             row.push(space)
         }
         board.push(row)

@@ -1,11 +1,15 @@
+import Space from "./space.js"
+
 console.log("SHIP CLASS IS MERGED");
 //Console output to test if 'ship.js' was correctly implemented into 'index.html'
 
 class Ship { //New class 'Ship' that stores a variable 'length'
-    constructor(length) { //Ship Object constructor that takes in variable 'length'
+    constructor(length, x, y) { //Ship Object constructor that takes in variable 'length'
       this.length = length; //Given length of a ship object (1, 2, 3 ,4, and 5)
       this.counter = 0; //Counter variable that will be used to keep track of hits on a relative 'Ship' object
       this.isSunk = false;
+      this.head = new Space(x,y);
+      this.head.state = "Placed";
     }
 
     getLength() { //Getter that returns the 'length' of the ship object
@@ -26,8 +30,6 @@ class Ship { //New class 'Ship' that stores a variable 'length'
       else
         return false;
     }
-
-
 }
 
 
