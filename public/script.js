@@ -63,6 +63,7 @@ const startGame = () => {
     console.log("Starting Game");
     mapToGrid(player1Board, "#game-grid-1");
     mapToGrid(player2Board, "#game-grid-2");
+    //--Placing Phase-------
 }
 
 /*
@@ -145,3 +146,17 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("start").addEventListener("click", startGame)
 
 })
+
+checkBounds = (ship) => {
+    for(let i = 0; i < ship.length; i++)
+    {
+      let x = ship.List[i].coordinate.x;
+      let y = ship.List[i].coordinate.y;
+
+      if((x < 0 && x > 8) || (y < 0 && y > 8)) 
+      {
+        return false;
+      }
+    }
+
+  }
