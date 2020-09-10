@@ -1,8 +1,5 @@
 console.log("SHIP CLASS IS MERGED");
-//A simple console output to test if 'ship.js' was correctly implemented into 'index.html'
-
-var shipContainer = new Array();
-//Temporary 'container' that holds 'Ship' objects
+//Console output to test if 'ship.js' was correctly implemented into 'index.html'
 
 class Ship { //New class 'Ship' that stores a variable 'length'
     constructor(length) { //Ship Object constructor that takes in variable 'length'
@@ -32,17 +29,40 @@ class Ship { //New class 'Ship' that stores a variable 'length'
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var p1ShipContainer = new Array();
+var p2ShipContainer = new Array();
+//Temporary 'containers' that holds 'Ship' objects from player 1 and player 2
+
 /*
 *FOR LOOP
 * Pre: None
 * Params: i
-* Post: 5 'Ship' objects are created of length 1,2,3,4 and 5
+* Post: 5 'Ship' objects are created of length 1,2,3,4 and 5 for both players
 */
 for(let i = 0; i < 5; i++)
 {
-  shipContainer[i] = new Ship(i + 1);
-  console.log("Ship " + (i+1) + " created");
+  p1ShipContainer[i] = new Ship(i + 1);
+  console.log("p1 Ship " + (i+1) + " created");
+  p2ShipContainer[i] = new Ship(i + 1);
+  console.log("p2 Ship " + (i+1) + " created");
 }
+
 
 
 

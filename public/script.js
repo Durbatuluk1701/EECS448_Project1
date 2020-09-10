@@ -22,7 +22,6 @@ const newBoard = () => {
 const player1Board = newBoard();
 const player2Board = newBoard();
 
-
 // Takes a Player's board representation and maps the values
 // onto the HTML Table
 const mapToGrid = (board, boardId) => {
@@ -31,7 +30,7 @@ const mapToGrid = (board, boardId) => {
     for(let i=0; i<9; i++){
         for(let j=0; j<9; j++){
             console.log(board[i][j].state)
-            gameGrid.children[0].children[i].children[j].innerHTML = board[i][j].coordinate.x+", " + board[i][j].coordinate.y;
+            gameGrid.children[0].children[i].children[j].innerHTML = board[i][j].state;
         }
     }
 }
@@ -64,7 +63,6 @@ const startGame = () => {
     console.log("Starting Game");
     mapToGrid(player1Board, "#game-grid-1");
     mapToGrid(player2Board, "#game-grid-2");
-    displayboard(player1Board,"#game-grid-1");
 }
 
 /*
@@ -100,23 +98,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /*Fire Command
     
-    Fire Function purely changing the backboard state. 
+    - Waiting for what the states of each board is (Whoever is working on it)
+    Adding even listeners to every table and cell when attacking 
+    Need name of gameboard2 to contiue then change turns 
     
-    const fireturn =(stateboard,turn) => 
+    const fireturn =(playerboard) => 
     {}
     */
+
     let gameboard1 = document.getElementById("game-grid-1");
     for (let i = 0; i < gameboard1.rows.length; i++) {
         for (let j = 0; j < gameboard1.rows[i].cells.length; j++) {
-            gameboard1.rows[j].cells[i].addEventListener("click", (cell) => {
-                console.log(j,i);
-                if (player1Board[j][i].state == "Ship") //Will be S if its a ship using 1 to test 
+            gameboard1.rows[i].cells[j].addEventListener("click", (cell) => {
+                console.log("clicked on this cell");
+                if (gameboard1.rows[i].cells[j].innerHTML == "1") //Will be S if its a ship using 1 to test 
                 {
-                    player1Board[j][i].state == "Hit";
-                    gameboard1.rows[j].cells[i].style.backgroundColor = "red"; //This will be else where
+                    gameboard1.rows[i].cells[j].innerHTML = "HIT"; //WIll be changed to H if its a hit
                 }
                 else {
-                    player1Board[j][i].state == "Miss";
+                    gameboard1.rows[i].cells[j].innerHTML = "MISS"; //WIll be changed to H if its a hit
                 }
             });
 
@@ -127,15 +127,14 @@ document.addEventListener("DOMContentLoaded", function () {
     let gameboard2 = document.getElementById("game-grid-2");
     for (let i = 0; i < gameboard2.rows.length; i++) {
         for (let j = 0; j < gameboard2.rows[i].cells.length; j++) {
-            gameboard2.rows[j].cells[i].addEventListener("click", (cell) => {
-                console.log(j,i);
-                if (player2Board[j][i].state == "Ship") //Will be S if its a ship using 1 to test 
+            gameboard2.rows[i].cells[j].addEventListener("click", (cell) => {
+                console.log("clicked on this cell");
+                if (gameboard2.rows[i].cells[j].innerHTML == "1") //Will be S if its a ship using 1 to test 
                 {
-                    player2Board[j][i].state = "Hit"; 
-                    gameboard2.rows[j].cells[i].style.backgroundColor = "red"; //This will be else where
+                    gameboard2.rows[i].cells[j].innerHTML = "HIT"; //WIll be changed to H if its a hit
                 }
                 else {
-                    player2Board[j][i].state = "Miss";
+                    gameboard2.rows[i].cells[j].innerHTML = "MISS"; //WIll be changed to H if its a hit
                 }
             });
 
@@ -146,44 +145,3 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("start").addEventListener("click", startGame)
 
 })
-
-//Function display the state 
-//Might messed up the index cause j and i are flipped haha thanks Issac!
-const displayboard = (statebackboard,ID) =>
-{
-    let gameboard1 = document.querySelector(ID);
-
-    for (let i = 0; i < gameboard1.rows.length; i++) 
-    {
-        for (let j = 0; j < gameboard1.rows[i].cells.length; j++) 
-        {
-            if (statebackboard[j][i].state == "Ship")
-            {
-                gameboard1.rows[j].cells[i].innerHTML = "Ship";
-            }
-            else if (statebackboard[j][i].state == "Empty")
-            {
-                gameboard1.rows[j].cells[i].innerHTML = "~";
-            }
-            else if (statebackboard[j][i].state == "Miss")
-            {
-                gameboard1.rows[j].cells[i].innerHTML = "X";
-            }
-            else if (statebackboard[j][i].state == "Hit")
-            {
-                gameboard1.rows[j].cells[i].style.backgroundColor = "red"; 
-            }
-        }
-    }
-}
-
-
-
-
-  
-
-
-
-
-
-
