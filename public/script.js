@@ -4,13 +4,14 @@ import Space from "./space.js"
 // Isaac: I marked the indices with x and y to make it clearer
 // X's go from left to right
 // Y's go from top to bottom 
-
-const newBoard = () => {
+// Coordinate not exactly what you think it is. To go South of board from top right you need to do +x and to go north -x and same for y +y to go right and -y to go left. 
+function newBoard() 
+{
     let board = []
-    for(let y=1; y<10; y++){
+    for(let y=0; y<9; y++){
         let row = []
-        for(let x=1; x<10; x++){
-            let space = new Space(x, y);
+        for(let x=0; x<9; x++){
+            let space = new Space(y, x);
             row.push(space)
         }
         board.push(row)
@@ -19,8 +20,12 @@ const newBoard = () => {
     return board
 }
 
-const player1Board = newBoard();
-const player2Board = newBoard();
+let player1Board = newBoard();
+let player2Board = newBoard();
+
+
+
+
 
 // Takes a Player's board representation and maps the values
 // onto the HTML Table
@@ -30,7 +35,7 @@ const mapToGrid = (board, boardId) => {
     for(let i=0; i<9; i++){
         for(let j=0; j<9; j++){
             console.log(board[i][j].state)
-            gameGrid.children[0].children[i].children[j].innerHTML = board[i][j].state;
+            gameGrid.children[0].children[i].children[j].innerHTML = board[i][j].coordinate.x+", " + board[i][j].coordinate.y + " (" + i + ","+ j + ")";
         }
     }
 }
@@ -62,7 +67,10 @@ const execOnGrid = (boardId, fn) => {
 const startGame = () => {
     console.log("Starting Game");
     mapToGrid(player1Board, "#game-grid-1");
+    player1Board[0][1].state = "Ship";
+    console.log(player1Board[0][1].state);
     mapToGrid(player2Board, "#game-grid-2");
+    displayboard(player1Board,"#game-grid-1");
 }
 
 /*
@@ -98,25 +106,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /*Fire Command
     
-    - Waiting for what the states of each board is (Whoever is working on it)
-    Adding even listeners to every table and cell when attacking 
-    Need name of gameboard2 to contiue then change turns 
+    Fire Function purely changing the backboard state. 
     
-    const fireturn =(playerboard) => 
+    const fireturn =(stateboard,turn) => 
     {}
     */
-
     let gameboard1 = document.getElementById("game-grid-1");
     for (let i = 0; i < gameboard1.rows.length; i++) {
         for (let j = 0; j < gameboard1.rows[i].cells.length; j++) {
-            gameboard1.rows[i].cells[j].addEventListener("click", (cell) => {
-                console.log("clicked on this cell");
-                if (gameboard1.rows[i].cells[j].innerHTML == "1") //Will be S if its a ship using 1 to test 
+            gameboard1.rows[j].cells[i].addEventListener("click", (cell) => {
+                console.log(j,i);
+                if (player1Board[j][i].state == "Ship") //Will be S if its a ship using 1 to test 
                 {
-                    gameboard1.rows[i].cells[j].innerHTML = "HIT"; //WIll be changed to H if its a hit
+                    player1Board[j][i].state == "Hit";
+                    gameboard1.rows[j].cells[i].style.backgroundColor = "red"; //This will be else where
                 }
                 else {
-                    gameboard1.rows[i].cells[j].innerHTML = "MISS"; //WIll be changed to H if its a hit
+                    player1Board[j][i].state == "Miss";
                 }
             });
 
@@ -127,14 +133,15 @@ document.addEventListener("DOMContentLoaded", function () {
     let gameboard2 = document.getElementById("game-grid-2");
     for (let i = 0; i < gameboard2.rows.length; i++) {
         for (let j = 0; j < gameboard2.rows[i].cells.length; j++) {
-            gameboard2.rows[i].cells[j].addEventListener("click", (cell) => {
-                console.log("clicked on this cell");
-                if (gameboard2.rows[i].cells[j].innerHTML == "1") //Will be S if its a ship using 1 to test 
+            gameboard2.rows[j].cells[i].addEventListener("click", (cell) => {
+                console.log(j,i);
+                if (player2Board[j][i].state == "Ship") //Will be S if its a ship using 1 to test 
                 {
-                    gameboard2.rows[i].cells[j].innerHTML = "HIT"; //WIll be changed to H if its a hit
+                    player2Board[j][i].state = "Hit"; 
+                    gameboard2.rows[j].cells[i].style.backgroundColor = "red"; //This will be else where
                 }
                 else {
-                    gameboard2.rows[i].cells[j].innerHTML = "MISS"; //WIll be changed to H if its a hit
+                    player2Board[j][i].state = "Miss";
                 }
             });
 
@@ -145,3 +152,33 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("start").addEventListener("click", startGame)
 
 })
+
+//Function display the state 
+//Might messed up the index cause j and i are flipped haha thanks Issac!
+const displayboard = (statebackboard,ID) =>
+{
+    let gameboard1 = document.querySelector(ID);
+
+    for (let i = 0; i < gameboard1.rows.length; i++) 
+    {
+        for (let j = 0; j < gameboard1.rows[i].cells.length; j++) 
+        {
+            if (statebackboard[j][i].state == "Ship")
+            {
+                gameboard1.rows[j].cells[i].innerHTML = "Ship";
+            }
+            if (statebackboard[j][i].state == "Empty")
+            {
+                gameboard1.rows[j].cells[i].innerHTML = "~";
+            }
+            if (statebackboard[j][i].state == "Miss")
+            {
+                gameboard1.rows[j].cells[i].innerHTML = "X";
+            }
+            if (statebackboard[j][i].state == "Hit")
+            {
+                gameboard1.rows[j].cells[i].style.backgroundColor = "red"; 
+            }
+        }
+    }
+}
