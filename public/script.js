@@ -23,7 +23,6 @@ const newBoard = () =>
 let player1Board = newBoard();
 let player2Board = newBoard();
 
-
 //Given an x,y where 0 <= x,y < 9, and a state (back)board of Spaces, find the cooresponding Space for that coordinate on the board
 const findSpace = (x, y, board) => {
     for(let row of board){
@@ -34,7 +33,6 @@ const findSpace = (x, y, board) => {
         }
     }
 }
-
 
 // Takes a Player's board representation and maps the values
 // onto the HTML Table
