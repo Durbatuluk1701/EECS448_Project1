@@ -6,7 +6,12 @@ import { ShipContainer, Ship } from "./ship.js";
 // X's go from left to right
 // Y's go from top to bottom 
 // Coordinate not exactly what you think it is. To go South of board from top right you need to do +x and to go north -x and same for y +y to go right and -y to go left. 
+<<<<<<< HEAD
 const newBoard = () => {
+=======
+const newBoard = () =>
+{
+>>>>>>> 4b3d6bea9572355f70ccd6e3fdc58533a1779087
     let board = []
     for (let y = 0; y < 9; y++) {
         let row = []
@@ -31,6 +36,33 @@ const findSpace = (x, y, board) => {
         }
     }
 }
+<<<<<<< HEAD
+=======
+
+// Takes a Player's board representation and maps the values
+// onto the HTML Table
+const mapToGrid = (board, boardId) => {
+    let gameGrid = document.querySelector(boardId);
+
+    for(let i=0; i<9; i++){
+        for(let j=0; j<9; j++){
+            console.log(board[i][j].state)
+            gameGrid.children[0].children[i].children[j].innerHTML = board[i][j].coordinate.x+", " + board[i][j].coordinate.y + " (" + i + ","+ j + ")";
+        }
+    }
+}
+
+const toggleColor = (cell, color) => {
+    let cellElem = document.querySelector('#' + cell.id);
+    cellElem.onclick = () => {
+        if (cellElem.style.backgroundColor !== color) {
+            cellElem.style = `background-color: ${color};`;
+        } else {
+            cellElem.style = "";
+        }
+    }
+}
+>>>>>>> 4b3d6bea9572355f70ccd6e3fdc58533a1779087
 
 // Allows for the execution of a callback function
 // on every single grid within the Game Table
@@ -253,6 +285,7 @@ const player2Hit = (x, y) => {
 
 // Starts the game
 const startGame = () => {
+<<<<<<< HEAD
     if (currentPhase === "starting") {
         displayboard(player1Board, "#game-grid-1");
         displayboard(player2Board, "#game-grid-2");
@@ -267,6 +300,14 @@ const startGame = () => {
     } else {
         alert("Dont spam the button dumbass");
     }
+=======
+    console.log("Starting Game");
+    mapToGrid(player1Board, "#game-grid-1");
+    player1Board[0][1].state = "Ship";
+    console.log(findSpace(2, 5, player1Board).coordinate);
+    mapToGrid(player2Board, "#game-grid-2");
+    displayboard(player1Board,"#game-grid-1");
+>>>>>>> 4b3d6bea9572355f70ccd6e3fdc58533a1779087
 }
 
 /*
@@ -385,6 +426,7 @@ const displayboard = (statebackboard, ID) => {
         }
     }
 }
+<<<<<<< HEAD
 
 const checkBounds = (ship, board) => {
     for (let i = 0; i < ship.length; i++) {
@@ -403,3 +445,5 @@ const checkBounds = (ship, board) => {
     }
     return true
 }
+=======
+>>>>>>> 4b3d6bea9572355f70ccd6e3fdc58533a1779087
