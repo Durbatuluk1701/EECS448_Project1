@@ -1,4 +1,5 @@
 import Space from "./space.js"
+import { ShipContainer, Ship } from "./ship.js";
 
 // Example player board representation
 // Isaac: I marked the indices with x and y to make it clearer
@@ -45,8 +46,8 @@ const execOnGrid = (boardId, fn) => {
 
 const player1Board = newBoard();
 const player2Board = newBoard();
-const player1OppBoard = [...player1Board];
-const player2Oppboard = [...player2Board];
+const player1OppBoard = newBoard();
+const player2OppBoard = newBoard();
 
 let numberOfShips = 0;
 
@@ -57,148 +58,150 @@ const showPlayerBoard = (board, gridId, opponentBoard, opponentId) => {
 }
 
 const selectNumberShips = () => {
-    do {
-        numberOfShips = parseInt(window.prompt("Enter the Number of Ships (1-5): "));
-    } while (numberOfShips < 0 || numberOfShips > 5 || isNaN(numberOfShips));
+    let promptText = document.querySelector("#player-prompt-text");
+    promptText.hidden = false;
+    promptText.innerHTML = "Enter the Number of Ships (1-5): ";
+    document.querySelector("#player-prompt-submit").addEventListener("click", () => {
+        do {
+            numberOfShips = parseInt(document.querySelector("#player-prompt-value"));
+            if (numberOfShips < 0 || numberOfShips > 5 || isNaN(numberOfShips)) {
+                document.querySelector("#prompt-error").innerHTML = "INVALID INPUT!";
+            }
+        } while (numberOfShips < 0 || numberOfShips > 5 || isNaN(numberOfShips));
+    });
 }
 
-const placeShips = (player, playerBoard) => {
-    for (let i = 1; i <= numberOfShips; i++) {
-        let validShip = false;
-        let coordinates;
-        let direction;
-        while (!validShip) {
-            coordinates = "";
-            while (
-                coordinates.length !== 2 ||
-                !["A", "B", "C", "D", "E", "F", "G", "H", "I"].includes(coordinates[0]) ||
-                !['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(coordinates[1])
-            ) {
-                coordinates = prompt(`Coordinates of ${player}'s ${i}x1 ship head: (A-I + 1-9)`);
-            }
-            direction = "";
-            while (!["up", "down", "left", "right"].includes(direction)) {
-                direction = prompt(`Direction the rest of the ship is facing: (up, down, left, right)`);
-            }
-            let valid;
-            for (let j = 0; j < i; j++) {
-                console.log("for", j, valid);
-                valid = true;
-                try {
-                    if (playerBoard[
-                        ["A", "B", "C", "D", "E", "F", "G", "H", "I"].indexOf(coordinates[0]) - (j * (direction === "up" ? 1 : direction === "down" ? -1 : 0))
-                    ][
-                        parseInt(coordinates[1]) - 1 - (j * (direction === "left" ? 1 : direction === "right" ? -1 : 0))
-                    ].state === "Ship") {
-                        console.log("inside");
-                        valid = false;
-                        break;
-                    }
-                } catch {
-                    console.log("catch");
+const placeShip = (board, x, y, player) => {
+    if (board[y][x].state === "Ship") {
+        alert("Do not double place ships!");
+    } else {
+        let direction = "";
+        while (!["up", "down", "left", "right"].includes(direction)) {
+            direction = prompt(`Direction the rest of the ship is facing: (up, down, left, right)`);
+        }
+        let valid;
+        for (let j = 0; j < (player === "Player 1" ? p1Ships : p2Ships) + 1; j++) {
+            console.log("for", j, valid);
+            valid = true;
+            try {
+                console.log(x, y);
+                if (board[
+                    y - (j * (direction === "up" ? 1 : direction === "down" ? -1 : 0))
+                ][
+                    x - (j * (direction === "left" ? 1 : direction === "right" ? -1 : 0))
+                ].state === "Ship") {
+                    console.log("inside");
                     valid = false;
+                    alert("Do not overlap ships");
                     break;
                 }
-            }
-            if (valid === false) {
-                console.log("invalid");
-                validShip = false;
-                continue;
-            } else {
-                validShip = true;
+            } catch {
+                console.log("catch");
+                alert("Place ships within boundaries");
+                valid = false;
+                break;
             }
         }
-        for (let j = 0; j < i; j++) {
-            playerBoard[
-                ["A", "B", "C", "D", "E", "F", "G", "H", "I"].indexOf(coordinates[0]) - (j * (direction === "up" ? 1 : direction === "down" ? -1 : 0))
-            ][
-                coordinates[1] - 1 - (j * (direction === "left" ? 1 : direction === "right" ? -1 : 0))
-            ].state = "Ship";
-            displayboard(playerBoard, player === "Player 1" ? "#game-grid-1" : "#game-grid-2");
+        if (valid) {
+            for (let j = 0; j < (player === "Player 1" ? p1Ships : p2Ships) + 1; j++) {
+                board[
+                    y - (j * (direction === "up" ? 1 : direction === "down" ? -1 : 0))
+                ][
+                    x - (j * (direction === "left" ? 1 : direction === "right" ? -1 : 0))
+                ].state = "Ship";
+                displayboard(board, player === "Player 1" ? "#game-grid-1" : "#game-grid-2");
+            }
+            if (player === "Player 1") {
+                player1Ships.addShip(new Ship(p1Ships + 1, new Space(y, x), direction));
+                p1Ships++;
+            } else {
+                player2Ships.addShip(new Ship(p2Ships + 1, new Space(y, x), direction));
+                p2Ships++;
+            }
         }
     }
-    displayboard(playerBoard, player === "Player 1" ? "#game-grid-1" : "#game-grid-2");
+    if (currentPhase === "p1-ship" && p1Ships === numberOfShips) {
+        alert("Player 1 Ship Phase Complete");
+        displayboard(player2OppBoard, "#game-grid-1");
+        console.log(player2OppBoard);
+        displayboard(player2Board, "#game-grid-2");
+        confirm("Switch Players!");
+        currentPhase = "p2-ship";
+    }
+    else if (currentPhase === "p2-ship" && p2Ships === numberOfShips) {
+        alert("Player 2 Ship Phase Complete");
+        displayboard(player1OppBoard, "#game-grid-2");
+        displayboard(player1Board, "#game-grid-1");
+        confirm("Switch Players!");
+        currentPhase = "p1-turn";
+    }
 }
 
-const isGameWon = () => {
-    if (player1Board.every((row) => { row.every((cell) => cell.state !== "Ship") })) {
+const checkGameOver = () => {
+    if (player1Ships.allSunk()) {
         gameOver("Player 1");
+        currentPhase = "game-over";
         return true;
-    } else if (player2Board.every((row) => { row.every((cell) => cell.state !== "Ship") })) {
+    } else if (player2Ships.allSunk()) {
         gameOver("Player 2");
+        currentPhase = "game-over";
         return true;
     }
     return false;
 }
 
-const player1Turn = () => {
-    showPlayerBoard(player1Board, "#game-grid-1", player1OppBoard, "#game-grid-2");
-    let hitting = true;
-    while (hitting) {
-        let coordinates = "";
-        let converted = {};
-        while (
-            coordinates.length !== 2 ||
-            !["A", "B", "C", "D", "E", "F", "G", "H", "I"].includes(coordinates[0]) ||
-            !['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(coordinates[1])
-        ) {
-            coordinates = prompt(`Coordinates to fire at: (A-I + 1-9)`);
-        }
-        converted.x = ["A", "B", "C", "D", "E", "F", "G", "H", "I"].indexOf(coordinates[0]);
-        converted.y = parseInt(coordinates[1]) - 1
-        if (player2Board[converted.x][converted.y].state === "Ship") {
-            alert("HIT!!!!!");
-            player1OppBoard[converted.x][converted.y] = "Hit";
-        } else {
-            hitting = false;
-            alert("MISS");
-            player1OppBoard[converted.x][converted.y] = "Miss";
-        }
+const player1Ships = new ShipContainer(numberOfShips);
+const player2Ships = new ShipContainer(numberOfShips);
+
+const player1Hit = (x, y) => {
+    if (player2Board[y][x].state === "Ship") {
+        alert("HIT!!!!!");
+        player1OppBoard[y][x].state = "Hit";
+        player1Ships.hit(x, y);
         displayboard(player1OppBoard, "#game-grid-2");
+    } else {
+        alert("MISS");
+        player1OppBoard[y][x].state = "Miss";
+        currentPhase = "p2-turn";
+        displayboard(player1OppBoard, "#game-grid-2");
+        alert("Switch Players!");
+        displayboard(player2Board, "#game-grid-2");
+        displayboard(player2OppBoard, "#game-grid-1");
     }
 }
 
-const player2Turn = () => {
-    showPlayerBoard(player2Board, "#game-grid-2", player2OppBoard, "#game-grid-1");
-    let hitting = true;
-    while (hitting) {
-        let coordinates = "";
-        let converted = { x, y };
-        while (
-            coordinates.length !== 2 ||
-            !["A", "B", "C", "D", "E", "F", "G", "H", "I"].includes(coordinates[0]) ||
-            !['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(coordinates[1])
-        ) {
-            coordinates = prompt(`Coordinates to fire at: (A-I + 1-9)`);
-        }
-        converted.x = ["A", "B", "C", "D", "E", "F", "G", "H", "I"].indexOf(coordinates[0]);
-        converted.y = parseInt(coordinates[1]) - 1
-        if (player1Board[converted.x][converted.y].state === "Ship") {
-            alert("HIT!!!!!");
-            player2OppBoard[converted.x][converted.y] = "Hit";
-        } else {
-            hitting = false;
-            alert("MISS");
-            player2OppBoard[converted.x][converted.y] = "Miss";
-        }
-        displayboard(player2OppBoard, "#game-grid-2");
+const player2Hit = (x, y) => {
+    if (player1Board[y][x].state === "Ship") {
+        alert("HIT!!!!!");
+        player2OppBoard[y][x].state = "Hit";
+        player2Ships.hit(x, y);
+        displayboard(player2OppBoard, "#game-grid-1");
+    } else {
+        alert("MISS");
+        player2OppBoard[y][x].state = "Miss";
+        currentPhase = "p1-turn";
+        displayboard(player2OppBoard, "#game-grid-1");
+        alert("Switch Players!");
+        displayboard(player1Board, "#game-grid-1");
+        displayboard(player1OppBoard, "#game-grid-2");
     }
 }
 
 // Starts the game
 const startGame = () => {
-    selectNumberShips();
-    console.log("Playing with", numberOfShips, "ships");
-    placeShips("Player 1", player1Board);
-    alert("Player 1 Ships Placed! Switch Positions");
-    placeShips("Player 2", player2Board);
-    console.log("Starting Game");
-    while (!isGameWon()) {
-        player1Turn();
-        if (isGameWon()) {
-            break;
-        }
-        player2Turn();
+    if (currentPhase === "starting") {
+        displayboard(player1Board, "#game-grid-1");
+        displayboard(player2Board, "#game-grid-2");
+        do {
+            numberOfShips = parseInt(prompt("Enter number of ships (1-5): "));
+            if (numberOfShips < 0 || numberOfShips > 5 || isNaN(numberOfShips)) {
+                alert("Invalid Input");
+            }
+        } while (numberOfShips < 0 || numberOfShips > 5 || isNaN(numberOfShips));
+        console.log(numberOfShips, "Number of ships");
+        currentPhase = "p1-ship";
+    } else {
+        alert("Dont spam the button dumbass");
     }
 }
 
@@ -229,6 +232,12 @@ const clearBoard = (boardName) => {
     })
 }
 
+let currentPhase = "starting"; // starting, p1-ship, p1-turn, p2-ship, p2-turn, game-over
+
+let p1Ships = 0;
+
+let p2Ships = 0;
+
 document.addEventListener("DOMContentLoaded", function () {
 
     /*Fire Command
@@ -238,36 +247,52 @@ document.addEventListener("DOMContentLoaded", function () {
     const fireturn =(stateboard,turn) => 
     {}
     */
-    // let gameboard1 = document.getElementById("game-grid-1");
-    // for (let i = 0; i < gameboard1.rows.length; i++) {
-    //     for (let j = 0; j < gameboard1.rows[i].cells.length; j++) {
-    //         gameboard1.rows[j].cells[i].addEventListener("click", () => {
-    //             handleClick(i, j);
-    //             displayboard(player1Board, "#game-grid-1");
-    //         });
+    let gameboard1 = document.getElementById("game-grid-1");
+    for (let i = 0; i < gameboard1.rows.length; i++) {
+        for (let j = 0; j < gameboard1.rows[i].cells.length; j++) {
+            gameboard1.rows[j].cells[i].addEventListener("click", () => {
+                console.log(player1Ships);
+                if (currentPhase === "p1-ship") {
+                    placeShip(player1Board, i, j, "Player 1");
+                } else if (currentPhase === "p1-turn") {
+                    // do nothing if they click there own board during there turn
+                } else if (currentPhase === "p2-ship") {
+                    // do nothing if enemy clicks p1 board during ship
+                } else if (currentPhase === "p2-turn") {
+                    player2Hit(i, j);
+                } else if (currentPhase === "game-over") {
+                    alert("Game Over, refresh page");
+                }
+                checkGameOver();
+            });
 
-    //     }
+        }
 
-    // }
+    }
 
-    // let gameboard2 = document.getElementById("game-grid-2");
-    // for (let i = 0; i < gameboard2.rows.length; i++) {
-    //     for (let j = 0; j < gameboard2.rows[i].cells.length; j++) {
-    //         gameboard2.rows[j].cells[i].addEventListener("click", (cell) => {
-    //             console.log(j, i);
-    //             if (player2Board[j][i].state == "Ship") //Will be S if its a ship using 1 to test 
-    //             {
-    //                 player2Board[j][i].state = "Hit";
-    //                 gameboard2.rows[j].cells[i].style.backgroundColor = "red"; //This will be else where
-    //             }
-    //             else {
-    //                 player2Board[j][i].state = "Miss";
-    //             }
-    //         });
+    let gameboard2 = document.getElementById("game-grid-2");
+    for (let i = 0; i < gameboard2.rows.length; i++) {
+        for (let j = 0; j < gameboard2.rows[i].cells.length; j++) {
+            gameboard2.rows[j].cells[i].addEventListener("click", (cell) => {
+                console.log(player2Ships);
+                console.log(j, i);
+                if (currentPhase === "p2-ship") {
+                    placeShip(player2Board, i, j, "Player 2");
+                } else if (currentPhase === "p2-turn") {
+                    // do nothing if they click there own board during there turn
+                } else if (currentPhase === "p1-ship") {
+                    // do nothing if enemy clicks p1 board during ship
+                } else if (currentPhase === "p1-turn") {
+                    player1Hit(i, j);
+                } else if (currentPhase === "game-over") {
+                    alert("Game Over, refresh page");
+                }
+                checkGameOver();
+            });
 
-    //     }
+        }
 
-    // }
+    }
 
     document.getElementById("start").addEventListener("click", startGame);
     document.getElementById("game-over").addEventListener("click", () => gameOver("Person"));
@@ -290,6 +315,7 @@ const displayboard = (statebackboard, ID) => {
                 gameboard1.rows[j].cells[i].innerHTML = "X";
             }
             if (statebackboard[j][i].state == "Hit") {
+                gameboard1.rows[j].cells[i].innerHTML = "O";
                 gameboard1.rows[j].cells[i].style.backgroundColor = "red";
             }
         }
@@ -305,5 +331,4 @@ const checkBounds = (ship) => {
             return false;
         }
     }
-
 }
