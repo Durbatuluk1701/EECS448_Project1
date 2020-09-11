@@ -35,12 +35,22 @@ class Ship { //New class 'Ship' that stores a variable 'length'
 
       }
 
-
-
+    constructor(length) { //Ship Object constructor that takes in variable 'length'
+      this.length = length; //Given length of a ship object (1, 2, 3 ,4, and 5)
+      this.counter = 0; //Counter variable that will be used to keep track of hits on a relative 'Ship' object
+      this.isSunk = false;
     }
 
     getLength() { //Getter that returns the 'length' of the ship object
       return this.length;
+    }
+
+    getCounter() {  //Getter that returns the 'counter' variable when called
+      return this.counter;
+    }
+
+    setCounter(x) { //Setter that modifys the 'counter' variabe when called
+      this.counter = x;
     }
 
     sunk() { //'Ship' method that uses parameters 'length' and 'counter' to check if a sink has occured
@@ -49,11 +59,16 @@ class Ship { //New class 'Ship' that stores a variable 'length'
       else
         return false;
     }
-
 }
 
 
 /*var p1ShipContainer = new Array();
+
+}
+
+
+
+var p1ShipContainer = new Array();
 var p2ShipContainer = new Array();
 //Temporary 'containers' that holds 'Ship' objects from player 1 and player 2
 
@@ -70,8 +85,4 @@ for(let i = 0; i < 5; i++)
   p2ShipContainer[i] = new Ship(i + 1);
   console.log("p2 Ship " + (i+1) + " created");
 }
-
-
-
-
 
