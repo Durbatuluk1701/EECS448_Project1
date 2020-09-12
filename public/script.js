@@ -1,37 +1,7 @@
 import Space from "./space.js"
 import { ShipContainer, Ship } from "./ship.js";
 
-// Example player board representation
-// Isaac: I marked the indices with x and y to make it clearer
-// X's go from left to right
-// Y's go from top to bottom 
-// Coordinate not exactly what you think it is. To go South of board from top right you need to do +x and to go north -x and same for y +y to go right and -y to go left. 
-const newBoard = () => {
-    let board = []
-    for (let y = 0; y < 9; y++) {
-        let row = []
-        for (let x = 0; x < 9; x++) {
-            let space = new Space(y, x);
-            row.push(space)
-        }
-        board.push(row)
-    }
-
-    return board
-}
-
-
-//Given an x,y where 0 <= x,y < 9, and a state (back)board of Spaces, find the cooresponding Space for that coordinate on the board
-const findSpace = (x, y, board) => {
-    for (let row of board) {
-        for (let cell of row) {
-            if (cell.coordinate.x == x && cell.coordinate.y == y) {
-                return cell
-            }
-        }
-    }
-}
-
+// Global variables
 let player1Ships;
 let player2Ships;
 let player1Board;
@@ -45,7 +15,51 @@ let currentPhase = "starting"; // starting, p1-ship, p1-turn, p2-ship, p2-turn, 
 
 let p1Ships = 0;
 let p2Ships = 0;
+// End Global variables
 
+/*
+* Method: newBoard
+* Pre: None
+* Params: None
+* Post: new stateboard/backboard is generated (9x9 board)
+*/
+const newBoard = () => {
+    // Coordinate not exactly what you think it is. 
+    // To go South of board from top right you need to do +x and to go north -x and same for y +y to go right and -y to go left. 
+    let board = [];
+    for (let y = 0; y < 9; y++) {
+        let row = []
+        for (let x = 0; x < 9; x++) {
+            let space = new Space(y, x);
+            row.push(space)
+        }
+        board.push(row)
+    }
+    return board
+}
+
+/*
+* Method: findSpace
+* Pre: Stateboard exists
+* Params: 'x': x-coordinate; 'y': y-coordinate; 'board': pre-existing stateboard
+* Post: Returns the space on the stateboard with corresponding x, y coordinates
+*/
+const findSpace = (x, y, board) => {
+    for (let row of board) {
+        for (let cell of row) {
+            if (cell.coordinate.x === x && cell.coordinate.y === y) {
+                return cell
+            }
+        }
+    }
+}
+
+/*
+* Method: placeShip
+* Pre: Stateboard exists, game has started, currentPhase is in one of the "X-ship" phases
+* Params: 'board': the stateboard being modified; 'x': x-coordinate; 'y': y-coordinate; 'player': name of the player
+* Post: A new ship has been placed on the given board, player ship count increments, add ship to ship container, new board displayed
+*/
 const placeShip = (board, x, y, player) => {
     if (board[x][y].state === "Ship") {
         alert("Do not double place ships!");
@@ -72,7 +86,7 @@ const placeShip = (board, x, y, player) => {
             else if (e.key == "Enter") {
                 direction = direction
             }
-            else{
+            else {
                 direction = ""
             }
 
@@ -131,7 +145,7 @@ const placeShip = (board, x, y, player) => {
                 }
                 if (e.key == "Enter") {
                     let ship = {}
-                    if(direction != ""){
+                    if (direction != "") {
                         if (player === "Player 1") {
                             ship = new Ship(p1Ships + 1, new Space(x, y), direction)
                         } else {
@@ -155,8 +169,8 @@ const placeShip = (board, x, y, player) => {
                                 displayboard(board, player === "Player 1" ? "#game-grid-1" : "#game-grid-2");
                                 document.removeEventListener('keydown', keyListener);
                                 document.removeEventListener('keydown', enterListener)
-                                if(!((player === "Player 1" ? p1Ships : p2Ships) == numberOfShips)){
-                                    alert("Place Ship #"+((player === "Player 1" ? p1Ships : p2Ships)+1))
+                                if (!((player === "Player 1" ? p1Ships : p2Ships) == numberOfShips)) {
+                                    alert("Place Ship #" + ((player === "Player 1" ? p1Ships : p2Ships) + 1))
                                 }
                                 if (currentPhase === "p1-ship" && p1Ships === numberOfShips) {
                                     alert("Player 1 Ship Phase Complete");
@@ -174,15 +188,15 @@ const placeShip = (board, x, y, player) => {
                                     currentPhase = "p1-turn";
                                 }
                             }
-                    
-                        }else {
+
+                        } else {
                             alert("Invalid Ship, Try again")
                             displayboard(board, player === "Player 1" ? "#game-grid-1" : "#game-grid-2");
                             document.removeEventListener('keydown', keyListener);
                             document.removeEventListener('click', clickListener);
                             document.removeEventListener('keydown', enterListener);
                         }
-                    } 
+                    }
                     else {
                         alert("Use Arrow Keys to Place")
                     }
@@ -193,6 +207,12 @@ const placeShip = (board, x, y, player) => {
     }
 }
 
+/*
+* Method: checkGameOver
+* Pre: Game is running
+* Params: None
+* Post: Game will end if all ships given are in a state of being sunken, changes phase to game-over if game is over
+*/
 const checkGameOver = () => {
     if (currentPhase !== "p1-turn" && currentPhase !== "p2-turn") {
         return;
@@ -209,15 +229,26 @@ const checkGameOver = () => {
     return false;
 }
 
+/*
+* Method: player1Hit
+* Pre: Game is running, currentPhase in 'p1-turn'
+* Params: 'x': x-coordinate; 'y': y-coordinate;
+* Post: Player either hits or misses, new board state is displayed, changes phase on miss
+*/
 const player1Hit = (x, y) => {
     if (player2Board[y][x].state === "Ship") {
         alert("HIT!!!!!");
+        player2Board[y][x].state = "Sunk";
         player1OppBoard[y][x].state = "Hit";
         player2Ships.hit(y, x);
         displayboard(player1OppBoard, "#game-grid-2");
     } else {
-        alert("MISS");
-        player1OppBoard[y][x].state = "Miss";
+        if (player2Board[y][x].state !== "Sunk") {
+            alert("MISS");
+            player1OppBoard[y][x].state = "Miss";
+        } else {
+            alert("Already fired there");
+        }
         currentPhase = "p2-turn";
         displayboard(player1OppBoard, "#game-grid-2");
         alert("Switch Players!");
@@ -226,15 +257,26 @@ const player1Hit = (x, y) => {
     }
 }
 
+/*
+* Method: player2Hit
+* Pre: Game is running, currentPhase in 'p2-turn'
+* Params: 'x': x-coordinate; 'y': y-coordinate;
+* Post: Player either hits or misses, new board state is displayed, changes phase on miss
+*/
 const player2Hit = (x, y) => {
     if (player1Board[y][x].state === "Ship") {
         alert("HIT!!!!!");
+        player1Board[y][x].state = "Sunk";
         player2OppBoard[y][x].state = "Hit";
         player1Ships.hit(y, x);
         displayboard(player2OppBoard, "#game-grid-1");
     } else {
-        alert("MISS");
-        player2OppBoard[y][x].state = "Miss";
+        if (player1Board[y][x].state !== "Sunk") {
+            alert("MISS");
+            player2OppBoard[y][x].state = "Miss";
+        } else {
+            alert("Already fired there");
+        }
         currentPhase = "p1-turn";
         displayboard(player2OppBoard, "#game-grid-1");
         alert("Switch Players!");
@@ -243,7 +285,12 @@ const player2Hit = (x, y) => {
     }
 }
 
-// Starts the game
+/*
+* Method: startgame
+* Pre: None 
+* Params: None
+* Post: Starts game if not started, changes phase to ship placement, displays board, resets game if game-over phase
+*/
 const startGame = () => {
     if (currentPhase === "starting") {
         player1Ships = new ShipContainer();
@@ -300,15 +347,8 @@ const clearBoard = (boardName) => {
     }
 }
 
+// Adds HTML Table event listeners for handling battleship click events
 document.addEventListener("DOMContentLoaded", function () {
-
-    /*Fire Command
-    
-    Fire Function purely changing the backboard state. 
-    
-    const fireturn =(stateboard,turn) => 
-    {}
-    */
     let gameboard1 = document.getElementById("game-grid-1");
     for (let i = 0; i < gameboard1.rows.length; i++) {
         for (let j = 0; j < gameboard1.rows[i].cells.length; j++) {
@@ -326,9 +366,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 checkGameOver();
             });
-
         }
-
     }
 
     let gameboard2 = document.getElementById("game-grid-2");
@@ -348,40 +386,49 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 checkGameOver();
             });
-
         }
-
     }
 
+    // Adds event listener for the 'Start Game' button
     document.getElementById("start").addEventListener("click", startGame);
 })
 
-//Function display the state 
-//Might messed up the index cause j and i are flipped haha thanks Issac!
+/*
+* Method: displayBoard
+* Pre: Game is running
+* Params: 'statebackboard': stateboard for a player, 'ID': CSS ID tag for Table
+* Post: Maps stateboard state to the table given by the ID param
+*/
 const displayboard = (statebackboard, ID) => {
-    let gameboard1 = document.querySelector(ID);
+    let gameBoard = document.querySelector(ID);
 
-    for (let i = 0; i < gameboard1.rows.length; i++) {
-        for (let j = 0; j < gameboard1.rows[i].cells.length; j++) {
-            if (statebackboard[j][i].state == "Ship") {
-                gameboard1.rows[j].cells[i].innerHTML = "Ship";
+    for (let i = 0; i < gameBoard.rows.length; i++) {
+        for (let j = 0; j < gameBoard.rows[i].cells.length; j++) {
+            if (statebackboard[j][i].state === "Ship") {
+                gameBoard.rows[j].cells[i].innerHTML = "Ship";
             }
-            if (statebackboard[j][i].state == "Empty") {
-                gameboard1.rows[j].cells[i].innerHTML = "<img src='image/Waterforbattleship.jpg'  alt='water'/>";
+            if (statebackboard[j][i].state === "Empty") {
+                gameBoard.rows[j].cells[i].innerHTML = "<img src='image/Waterforbattleship.jpg'  alt='water'/>";
             }
-            if (statebackboard[j][i].state == "Miss") {
-                gameboard1.rows[j].cells[i].innerHTML = "<img src='image/Miss.jpg'  alt='miss water splash'/>";;
+            if (statebackboard[j][i].state === "Miss") {
+                gameBoard.rows[j].cells[i].innerHTML = "<img src='image/Miss.jpg'  alt='miss water splash'/>";;
             }
-            if (statebackboard[j][i].state == "Hit") {
-                gameboard1.rows[j].cells[i].innerHTML = "<img src='image/hit.jpg'  alt='explosion hit'/>";;
+            if (statebackboard[j][i].state === "Hit" || statebackboard[j][i].state === "Sunk") {
+                gameBoard.rows[j].cells[i].innerHTML = "<img src='image/hit.jpg'  alt='explosion hit'/>";;
             }
         }
     }
 }
 
+/*
+* Method: checkBounds
+* Pre: Game is running, currentPhase in 'x-ship' phases
+* Params: 'ship': ship.js object; 'board': stateboard
+* Post: Verifies that a ship object does not violate any placement rules for a given board param
+*/
 const checkBounds = (ship, board) => {
     for (let i = 0; i < ship.length; i++) {
-        if(ship == null || ship == {}){
+        if (ship == null || ship == {}) {
             return false
         }
         let x = ship.List[i].coordinate.x;
@@ -395,7 +442,6 @@ const checkBounds = (ship, board) => {
                 return false
             }
         }
-
     }
     return true
 }
