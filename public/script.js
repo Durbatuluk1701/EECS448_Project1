@@ -226,7 +226,6 @@ const placeShip = (board, x, y, player) => {
     if (currentPhase === "p1-ship" && p1Ships === numberOfShips) {
         alert("Player 1 Ship Phase Complete");
         displayboard(player2OppBoard, "#game-grid-1");
-        console.log(player2OppBoard);
         displayboard(player2Board, "#game-grid-2");
         confirm("Switch Players!");
         currentPhase = "p2-ship";
@@ -241,6 +240,9 @@ const placeShip = (board, x, y, player) => {
 }
 
 const checkGameOver = () => {
+    if (currentPhase !== "p1-turn" && currentPhase !== "p2-turn") {
+        return;
+    }
     if (player1Ships.allSunk()) {
         gameOver("Player 1");
         currentPhase = "game-over";
@@ -253,14 +255,14 @@ const checkGameOver = () => {
     return false;
 }
 
-const player1Ships = new ShipContainer(numberOfShips);
-const player2Ships = new ShipContainer(numberOfShips);
+const player1Ships = new ShipContainer();
+const player2Ships = new ShipContainer();
 
 const player1Hit = (x, y) => {
     if (player2Board[y][x].state === "Ship") {
         alert("HIT!!!!!");
         player1OppBoard[y][x].state = "Hit";
-        player1Ships.hit(x, y);
+        player2Ships.hit(y, x);
         displayboard(player1OppBoard, "#game-grid-2");
     } else {
         alert("MISS");
@@ -277,7 +279,7 @@ const player2Hit = (x, y) => {
     if (player1Board[y][x].state === "Ship") {
         alert("HIT!!!!!");
         player2OppBoard[y][x].state = "Hit";
-        player2Ships.hit(x, y);
+        player1Ships.hit(y, x);
         displayboard(player2OppBoard, "#game-grid-1");
     } else {
         alert("MISS");
