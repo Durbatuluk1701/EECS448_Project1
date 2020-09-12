@@ -119,53 +119,56 @@ const placeShip = (board, x, y, player) => {
             document.addEventListener('keydown', function enterListener(e) {
                 if (e.key == "Enter") {
                     let ship = {}
-                    if (player === "Player 1") {
-                        ship = new Ship(p1Ships + 1, new Space(x, y), direction)
-                    } else {
-                        ship = new Ship(p2Ships + 1, new Space(x, y), direction)
-                    }
-                    if (checkBounds(ship, board)) {
-                        if (direction === "up" || direction === "down" || direction === "right" || direction === "left") {
-                            console.log(direction)
-                            if (player === "Player 1") {
-                                player1Ships.addShip(new Ship(p1Ships + 1, new Space(x, y), direction));
-                                p1Ships++;
-                            } else {
-                                player2Ships.addShip(new Ship(p2Ships + 1, new Space(x, y), direction));
-                                p2Ships++;
-                            }
-                            for (let ship of (player === "Player 1" ? player1Ships.ships : player2Ships.ships)) {
-                                for (let space of ship.List) {
-                                    findSpace(space.coordinate.x, space.coordinate.y, board).state = "Ship"
+                    if(direction != ""){
+                        if (player === "Player 1") {
+                            ship = new Ship(p1Ships + 1, new Space(x, y), direction)
+                        } else {
+                            ship = new Ship(p2Ships + 1, new Space(x, y), direction)
+                        }
+                        if (checkBounds(ship, board)) {
+                            if (direction === "up" || direction === "down" || direction === "right" || direction === "left") {
+                                console.log(direction)
+                                if (player === "Player 1") {
+                                    player1Ships.addShip(new Ship(p1Ships + 1, new Space(x, y), direction));
+                                    p1Ships++;
+                                } else {
+                                    player2Ships.addShip(new Ship(p2Ships + 1, new Space(x, y), direction));
+                                    p2Ships++;
+                                }
+                                for (let ship of (player === "Player 1" ? player1Ships.ships : player2Ships.ships)) {
+                                    for (let space of ship.List) {
+                                        findSpace(space.coordinate.x, space.coordinate.y, board).state = "Ship"
+                                    }
+                                }
+                                displayboard(board, player === "Player 1" ? "#game-grid-1" : "#game-grid-2");
+                                document.removeEventListener('keydown', keyListener);
+                                document.removeEventListener('keydown', enterListener)
+                                if(!((player === "Player 1" ? p1Ships : p2Ships) == numberOfShips)){
+                                    alert("Place Ship #"+((player === "Player 1" ? p1Ships : p2Ships)+1))
+                                }
+                                if (currentPhase === "p1-ship" && p1Ships === numberOfShips) {
+                                    alert("Player 1 Ship Phase Complete");
+                                    displayboard(player2OppBoard, "#game-grid-1");
+                                    displayboard(player2Board, "#game-grid-2");
+                                    confirm("Switch Players!");
+                                    alert("Player 2, Place Ship #1")
+                                    currentPhase = "p2-ship";
+                                }
+                                else if (currentPhase === "p2-ship" && p2Ships === numberOfShips) {
+                                    alert("Player 2 Ship Phase Complete");
+                                    displayboard(player1OppBoard, "#game-grid-2");
+                                    displayboard(player1Board, "#game-grid-1");
+                                    confirm("Switch Players!");
+                                    currentPhase = "p1-turn";
                                 }
                             }
-                            displayboard(board, player === "Player 1" ? "#game-grid-1" : "#game-grid-2");
-                            document.removeEventListener('keydown', keyListener);
-                            document.removeEventListener('keydown', enterListener)
-                            if(!((player === "Player 1" ? p1Ships : p2Ships) == numberOfShips)){
-                                alert("Place Ship #"+((player === "Player 1" ? p1Ships : p2Ships)+1))
-                            }
-                            if (currentPhase === "p1-ship" && p1Ships === numberOfShips) {
-                                alert("Player 1 Ship Phase Complete");
-                                displayboard(player2OppBoard, "#game-grid-1");
-                                displayboard(player2Board, "#game-grid-2");
-                                confirm("Switch Players!");
-                                alert("Player 2, Place Ship #1")
-                                currentPhase = "p2-ship";
-                            }
-                            else if (currentPhase === "p2-ship" && p2Ships === numberOfShips) {
-                                alert("Player 2 Ship Phase Complete");
-                                displayboard(player1OppBoard, "#game-grid-2");
-                                displayboard(player1Board, "#game-grid-1");
-                                confirm("Switch Players!");
-                                currentPhase = "p1-turn";
-                            }
+                    
+                        }else {
+                            alert("Invalid Ship, Try again")
                         }
-                        else {
-                            alert("Use Arrow Keys to Place")
-                        }
-                    } else {
-                        alert("Invalid Ship, Try again")
+                    } 
+                    else {
+                        alert("Use Arrow Keys to Place")
                     }
                 }
 
@@ -362,6 +365,9 @@ const displayboard = (statebackboard, ID) => {
 
 const checkBounds = (ship, board) => {
     for (let i = 0; i < ship.length; i++) {
+        if(ship == null || ship == {}){
+            return false
+        }
         let x = ship.List[i].coordinate.x;
         let y = ship.List[i].coordinate.y;
 
