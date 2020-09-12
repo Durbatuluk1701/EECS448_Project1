@@ -6,12 +6,8 @@ import { ShipContainer, Ship } from "./ship.js";
 // X's go from left to right
 // Y's go from top to bottom 
 // Coordinate not exactly what you think it is. To go South of board from top right you need to do +x and to go north -x and same for y +y to go right and -y to go left. 
-<<<<<<< HEAD
-const newBoard = () => {
-=======
 const newBoard = () =>
 {
->>>>>>> 4b3d6bea9572355f70ccd6e3fdc58533a1779087
     let board = []
     for (let y = 0; y < 9; y++) {
         let row = []
@@ -36,8 +32,6 @@ const findSpace = (x, y, board) => {
         }
     }
 }
-<<<<<<< HEAD
-=======
 
 // Takes a Player's board representation and maps the values
 // onto the HTML Table
@@ -62,7 +56,6 @@ const toggleColor = (cell, color) => {
         }
     }
 }
->>>>>>> 4b3d6bea9572355f70ccd6e3fdc58533a1779087
 
 // Allows for the execution of a callback function
 // on every single grid within the Game Table
@@ -101,14 +94,6 @@ const selectNumberShips = () => {
             }
         } while (numberOfShips < 0 || numberOfShips > 5 || isNaN(numberOfShips));
     });
-}
-
-const checkCoord = (x,y) => {
-    if(x >= 0 && x < 9 && y>=0 && y<9){
-        return true
-    }
-    return false
-}
 
 
 const placeShip = (board, x, y, player) => {
@@ -175,7 +160,7 @@ const placeShip = (board, x, y, player) => {
                 }
             }
         }
-        if(!done){
+        if(!done && ((p1Ships === numberOfShips && p2Ships != numberOfShips && player === "Player 2") || (p1Ships != numberOfShips))){
             document.addEventListener('keydown', keyListener);
 
             document.addEventListener('keydown', function enterListener(e){
@@ -285,7 +270,6 @@ const player2Hit = (x, y) => {
 
 // Starts the game
 const startGame = () => {
-<<<<<<< HEAD
     if (currentPhase === "starting") {
         displayboard(player1Board, "#game-grid-1");
         displayboard(player2Board, "#game-grid-2");
@@ -295,19 +279,11 @@ const startGame = () => {
                 alert("Invalid Input");
             }
         } while (numberOfShips < 0 || numberOfShips > 5 || isNaN(numberOfShips));
-        console.log(numberOfShips, "Number of ships");
         currentPhase = "p1-ship";
     } else {
         alert("Dont spam the button dumbass");
     }
-=======
-    console.log("Starting Game");
-    mapToGrid(player1Board, "#game-grid-1");
-    player1Board[0][1].state = "Ship";
-    console.log(findSpace(2, 5, player1Board).coordinate);
-    mapToGrid(player2Board, "#game-grid-2");
-    displayboard(player1Board,"#game-grid-1");
->>>>>>> 4b3d6bea9572355f70ccd6e3fdc58533a1779087
+    // TODO: Reset Game Status here if current phase is game-over
 }
 
 /*
@@ -426,7 +402,6 @@ const displayboard = (statebackboard, ID) => {
         }
     }
 }
-<<<<<<< HEAD
 
 const checkBounds = (ship, board) => {
     for (let i = 0; i < ship.length; i++) {
@@ -445,5 +420,3 @@ const checkBounds = (ship, board) => {
     }
     return true
 }
-=======
->>>>>>> 4b3d6bea9572355f70ccd6e3fdc58533a1779087
