@@ -33,39 +33,61 @@ const findSpace = (x, y, board) => {
     }
 }
 
-// Takes a Player's board representation and maps the values
-// onto the HTML Table
-const mapToGrid = (board, boardId) => {
-    let gameGrid = document.querySelector(boardId);
+const player1Board = newBoard();
+const player2Board = newBoard();
+const player1OppBoard = newBoard();
+const player2OppBoard = newBoard();
 
-    for(let i=0; i<9; i++){
-        for(let j=0; j<9; j++){
-            console.log(board[i][j].state)
-            gameGrid.children[0].children[i].children[j].innerHTML = board[i][j].coordinate.x+", " + board[i][j].coordinate.y + " (" + i + ","+ j + ")";
-        }
+const checkGameOver = () => {
+    if (currentPhase !== "p1-turn" && currentPhase !== "p2-turn") {
+        return;
+    }
+    if (player1Ships.allSunk()) {
+        gameOver("Player 1");
+        currentPhase = "game-over";
+        return true;
+    } else if (player2Ships.allSunk()) {
+        gameOver("Player 2");
+        currentPhase = "game-over";
+        return true;
+    }
+    return false;
+}
+
+const player1Ships = new ShipContainer();
+const player2Ships = new ShipContainer();
+
+const player1Hit = (x, y) => {
+    if (player2Board[y][x].state === "Ship") {
+        alert("HIT!!!!!");
+        player1OppBoard[y][x].state = "Hit";
+        player2Ships.hit(y, x);
+        displayboard(player1OppBoard, "#game-grid-2");
+    } else {
+        alert("MISS");
+        player1OppBoard[y][x].state = "Miss";
+        currentPhase = "p2-turn";
+        displayboard(player1OppBoard, "#game-grid-2");
+        alert("Switch Players!");
+        displayboard(player2Board, "#game-grid-2");
+        displayboard(player2OppBoard, "#game-grid-1");
     }
 }
 
-const toggleColor = (cell, color) => {
-    let cellElem = document.querySelector('#' + cell.id);
-    cellElem.onclick = () => {
-        if (cellElem.style.backgroundColor !== color) {
-            cellElem.style = `background-color: ${color};`;
-        } else {
-            cellElem.style = "";
-        }
-    }
-}
-
-// Allows for the execution of a callback function
-// on every single grid within the Game Table
-const execOnGrid = (boardId, fn) => {
-    console.log(`Executing ${fn.name}`)
-    let gameGrid = document.querySelector(boardId);
-    for (let row of gameGrid.children[0].children) {
-        for (let cell of row.children) {
-            fn(cell);
-        }
+const player2Hit = (x, y) => {
+    if (player1Board[y][x].state === "Ship") {
+        alert("HIT!!!!!");
+        player2OppBoard[y][x].state = "Hit";
+        player1Ships.hit(y, x);
+        displayboard(player2OppBoard, "#game-grid-1");
+    } else {
+        alert("MISS");
+        player2OppBoard[y][x].state = "Miss";
+        currentPhase = "p1-turn";
+        displayboard(player2OppBoard, "#game-grid-1");
+        alert("Switch Players!");
+        displayboard(player1Board, "#game-grid-1");
+        displayboard(player1OppBoard, "#game-grid-2");
     }
 }
 
@@ -306,17 +328,19 @@ const gameOver = (winnerName) => {
 * Post: The game board cell values, styles, and onclicks are removed
 */
 const clearBoard = (boardName) => {
-    execOnGrid(boardName, (cell) => {
-        cell.innerHTML = "";
-        cell.style = "";
-        cell.onclick = "";
-    })
+    let gameGrid = document.querySelector(boardName);
+    for (let row of gameGrid.children[0].children) {
+        for (let cell of row.children) {
+            cell.innerHTML = "";
+            cell.style = "";
+            cell.onclick = "";
+        }
+    }
 }
 
 let currentPhase = "starting"; // starting, p1-ship, p1-turn, p2-ship, p2-turn, game-over
 
 let p1Ships = 0;
-
 let p2Ships = 0;
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -332,9 +356,8 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < gameboard1.rows.length; i++) {
         for (let j = 0; j < gameboard1.rows[i].cells.length; j++) {
             gameboard1.rows[j].cells[i].addEventListener("click", () => {
-                console.log(player1Ships);
                 if (currentPhase === "p1-ship") {
-                    placeShip(player1Board, j, i, "Player 1");
+                    placeShip(player1Board, i, j, "Player 1");
                 } else if (currentPhase === "p1-turn") {
                     // do nothing if they click there own board during there turn
                 } else if (currentPhase === "p2-ship") {
@@ -355,10 +378,8 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < gameboard2.rows.length; i++) {
         for (let j = 0; j < gameboard2.rows[i].cells.length; j++) {
             gameboard2.rows[j].cells[i].addEventListener("click", (cell) => {
-                console.log(player2Ships);
-                console.log(j, i);
                 if (currentPhase === "p2-ship") {
-                    placeShip(player2Board, j, i, "Player 2");
+                    placeShip(player2Board, i, j, "Player 2");
                 } else if (currentPhase === "p2-turn") {
                     // do nothing if they click there own board during there turn
                 } else if (currentPhase === "p1-ship") {
@@ -390,14 +411,13 @@ const displayboard = (statebackboard, ID) => {
                 gameboard1.rows[j].cells[i].innerHTML = "Ship";
             }
             if (statebackboard[j][i].state == "Empty") {
-                gameboard1.rows[j].cells[i].innerHTML = "~";
+                gameboard1.rows[j].cells[i].innerHTML = "<img src='image/Waterforbattleship.jpg'  alt='water'/>";
             }
             if (statebackboard[j][i].state == "Miss") {
-                gameboard1.rows[j].cells[i].innerHTML = "X";
+                gameboard1.rows[j].cells[i].innerHTML = "<img src='image/Miss.jpg'  alt='miss water splash'/>";;
             }
             if (statebackboard[j][i].state == "Hit") {
-                gameboard1.rows[j].cells[i].innerHTML = "O";
-                gameboard1.rows[j].cells[i].style.backgroundColor = "red";
+                gameboard1.rows[j].cells[i].innerHTML = "<img src='image/hit.jpg'  alt='explosion hit'/>";;
             }
         }
     }
