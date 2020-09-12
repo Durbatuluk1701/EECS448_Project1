@@ -410,7 +410,7 @@ const displayboard = (statebackboard, ID) => {
             }
             if (statebackboard[j][i].state === "Empty") {
                 gameBoard.rows[j].cells[i].innerHTML = "<img src='image/Waterforbattleship.jpg'  alt='water'/>";
-                gameBoard.rows[j].cells[i].style.backgroundColor = "blue";
+                gameBoard.rows[j].cells[i].style.backgroundColor = "#0066FF";   //same as in index.html
             }
             if (statebackboard[j][i].state === "Miss") {
                 gameBoard.rows[j].cells[i].innerHTML = "";;
