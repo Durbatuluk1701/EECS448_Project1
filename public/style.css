@@ -35,7 +35,7 @@
 .game-grid {
     width: 450px;
     border: 2px solid black;
-    margin: 0px;
+    margin: auto;
 }
 
 .game-grid td {
