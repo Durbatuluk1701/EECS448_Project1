@@ -404,17 +404,21 @@ const displayboard = (statebackboard, ID) => {
 
     for (let i = 0; i < gameBoard.rows.length - 1; i++) {
         for (let j = 0; j < gameBoard.rows[i + 1].cells.length - 1; j++) {
-            if (statebackboard[j][i].state == "Ship") {
-                gameBoard.rows[j + 1].cells[i + 1].innerHTML = "Ship";
+            if (statebackboard[j][i].state === "Ship") {
+                gameBoard.rows[j + 1].cells[i + 1].innerHTML = "";
+                gameBoard.rows[j + 1].cells[i + 1].style.backgroundColor = "grey";
             }
             if (statebackboard[j][i].state === "Empty") {
                 gameBoard.rows[j + 1].cells[i + 1].innerHTML = "<img src='image/Waterforbattleship.jpg'  alt='water'/>";
+                gameBoard.rows[j + 1].cells[i + 1].style.backgroundColor = "#0066FF";   //same as in index.html
             }
             if (statebackboard[j][i].state === "Miss") {
-                gameBoard.rows[j + 1].cells[i + 1].innerHTML = "<img src='image/Miss.jpg'  alt='miss water splash'/>";;
+                gameBoard.rows[j + 1].cells[i + 1].innerHTML = "";;
+                gameBoard.rows[j + 1].cells[i + 1].style.backgroundColor = "white";
             }
             if (statebackboard[j][i].state === "Hit" || statebackboard[j][i].state === "Sunk") {
-                gameBoard.rows[j + 1].cells[i + 1].innerHTML = "<img src='image/hit.jpg'  alt='explosion hit'/>";;
+                gameBoard.rows[j + 1].cells[i + 1].innerHTML = "<img src='image/hit.jpg'  alt='explosion hit'/>";
+                gameBoard.rows[j + 1].cells[i + 1].style.backgroundColor = "black";
             }
         }
     }
