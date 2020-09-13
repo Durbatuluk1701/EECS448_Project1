@@ -338,8 +338,8 @@ const gameOver = (winnerName) => {
 */
 const clearBoard = (boardName) => {
     let gameGrid = document.querySelector(boardName);
-    for (let row of gameGrid.children[0].children) {
-        for (let cell of row.children) {
+    for (let i = 0; i < gameGrid.rows.length - 1; i++) {
+        for (let j = 0; j < gameGrid.rows[i].cells.length - 1; j++) {
             cell.innerHTML = "";
             cell.style = "";
             cell.onclick = "";
@@ -350,8 +350,8 @@ const clearBoard = (boardName) => {
 // Adds HTML Table event listeners for handling battleship click events
 document.addEventListener("DOMContentLoaded", function () {
     let gameboard1 = document.getElementById("game-grid-1");
-    for (let i = 0; i < gameboard1.rows.length; i++) {
-        for (let j = 0; j < gameboard1.rows[i].cells.length; j++) {
+    for (let i = 0; i < gameboard1.rows.length - 1; i++) {
+        for (let j = 0; j < gameboard1.rows[i].cells.length - 1; j++) {
             gameboard1.rows[j].cells[i].addEventListener("click", () => {
                 if (currentPhase === "p1-ship") {
                     placeShip(player1Board, j, i, "Player 1");
@@ -370,8 +370,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let gameboard2 = document.getElementById("game-grid-2");
-    for (let i = 0; i < gameboard2.rows.length; i++) {
-        for (let j = 0; j < gameboard2.rows[i].cells.length; j++) {
+    for (let i = 0; i < gameboard2.rows.length - 1; i++) {
+        for (let j = 0; j < gameboard2.rows[i].cells.length - 1; j++) {
             gameboard2.rows[j].cells[i].addEventListener("click", (cell) => {
                 if (currentPhase === "p2-ship") {
                     placeShip(player2Board, j, i, "Player 2");
@@ -402,10 +402,10 @@ document.addEventListener("DOMContentLoaded", function () {
 const displayboard = (statebackboard, ID) => {
     let gameBoard = document.querySelector(ID);
 
-    for (let i = 0; i < gameBoard.rows.length; i++) {
-        for (let j = 0; j < gameBoard.rows[i].cells.length; j++) {
-            if (statebackboard[j][i].state === "Ship") {
-                gameBoard.rows[j].cells[i].innerHTML = "Ship";
+    for (let i = 0; i < gameboard1.rows.length - 1; i++) {
+        for (let j = 0; j < gameboard1.rows[i].cells.length - 1; j++) {
+            if (statebackboard[j][i].state == "Ship") {
+                gameboard1.rows[j].cells[i].innerHTML = "Ship";
             }
             if (statebackboard[j][i].state === "Empty") {
                 gameBoard.rows[j].cells[i].innerHTML = "<img src='image/Waterforbattleship.jpg'  alt='water'/>";
