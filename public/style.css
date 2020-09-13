@@ -11,17 +11,6 @@
     color: black;
 }
 
-.XYcoordinate{
-    height: 100%;
-    width: 40px;
-}
-
-.XYcoordinate {
-    width: 100%;
-    height:50px;
-    margin-left: 615px;
-}
-
 #sideBar {
     width: 20%;
 }
